@@ -148,7 +148,13 @@ if (loading) return <LoadingSkeleton />
       borderColor: 'rgba(255,255,255,0.05)',
       show: true,
       shadowColor: 'rgba(0, 0, 0, 0.2)',
-      shadowBlur: 10
+      shadowBlur: 10,
+      ...(window.innerWidth < 768 ? {
+        left: '4%',
+        right: '4%',
+        top: '15%',
+        bottom: '12%',
+      } : {})
     },
     xAxis: {
       type: 'category',
@@ -179,7 +185,7 @@ if (loading) return <LoadingSkeleton />
     },
     series: [
       {
-        name: 'Current Price',
+        name: timePeriod === 'current' ? 'Current Price' : timePeriod === '1h' ? 'Price 1h ago' : 'Price 24h ago',
         type: 'bar',
         barWidth: '35%',
         data: chartData.map((item: CryptoCurrency) => ({
@@ -244,12 +250,7 @@ if (loading) return <LoadingSkeleton />
         },
         symbol: 'circle',
         symbolSize: 8,
-        data: chartData.map((item: CryptoCurrency) => ({
-          value: item.price,
-          dailyHigh: item.dailyHigh,
-          dailyLow: item.dailyLow,
-          name: item.symbol
-        })),
+        data: chartData.map((item: CryptoCurrency) => item.price),
         z: 2
       }] : [])
     ]
@@ -290,9 +291,11 @@ if (loading) return <LoadingSkeleton />
       <TimeToggle />
       <div className={`h-[280px] w-full transition-opacity duration-300 ${isUpdating ? 'opacity-70' : 'opacity-100'}`}>
         <ReactECharts 
+          key={`chart-${showTrendLine}-${timePeriod}`}
           option={option}
           style={{ height: '100%', width: '100%' }}
           theme="dark"
+          notMerge={true}
         />
       </div>
       <div className="text-sm text-gray-400 text-right mt-2">
